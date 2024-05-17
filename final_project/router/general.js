@@ -24,28 +24,81 @@ public_users.post('/register', (req, res) => {
 
 // Get the book list available in the shop
 public_users.get('/', function (req, res) {
-  return res.send(JSON.stringify(books, null, 4));
+  let myPromise = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(books);
+    }, 1000);
+  });
+  myPromise.then((books) => {
+    return res.send(JSON.stringify(books, null, 4));
+  });
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn', function (req, res) {
-  const ISBN = req.params.isbn;
-  return res.send(books[ISBN]);
+  let myPromise = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const ISBN = req.params.isbn;
+      if (books[ISBN]) {
+        resolve(books[ISBN]);
+      } else {
+        reject(new Error('Book not found'));
+      }
+    }, 1000);
+  });
+  myPromise
+    .then((book) => {
+      return res.send(JSON.stringify(book, null, 4));
+    })
+    .catch((error) => {
+      return res.status(500).send(error.message);
+    });
 });
 
 // Get book details based on author
 public_users.get('/author/:author', function (req, res) {
-  const author = req.params.author;
-
-  return res.send(
-    Object.values(books).filter((book) => book.author === author)
-  );
+  let myPromise = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const author = req.params.author;
+      const book = Object.values(books).filter(
+        (book) => book.author === author
+      );
+      if (book.length > 0) {
+        resolve(book);
+      } else {
+        reject(new Error('Author not found'));
+      }
+    }, 1000);
+  });
+  myPromise
+    .then((book) => {
+      return res.send(JSON.stringify(book, null, 4));
+    })
+    .catch((error) => {
+      return res.status(500).send(error.message);
+    });
 });
 
 // Get all books based on title
 public_users.get('/title/:title', function (req, res) {
-  const title = req.params.title;
-  return res.send(Object.values(books).filter((book) => book.title === title));
+  let myPromise = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const title = req.params.title;
+      const book = Object.values(books).filter((book) => book.title === title);
+      if (book.length > 0) {
+        resolve(book);
+      } else {
+        reject(new Error('Title not found'));
+      }
+    }, 1000);
+  });
+  myPromise
+    .then((book) => {
+      return res.send(JSON.stringify(book, null, 4));
+    })
+    .catch((error) => {
+      return res.status(500).send(error.message);
+    });
 });
 
 //  Get book review
